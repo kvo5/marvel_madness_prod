@@ -1,0 +1,174 @@
+datasource db {
+   provider = "mysql"
+   url      = env("DATABASE_URL")
+ }
+generator client {
+  provider = "prisma-client-js"
+}
+
+ model User {
+   id          String   @id
+   email       String   @unique
+   username    String   @unique
+   displayName String?
+   bio         String?
+   location    String?
+   // job         String? // Remove - Not in original schema request
+   // website     String? // Remove - Not in original schema request
+   role        Role?    // Add Role Enum
+   rank        String?  // Add Rank (String to accommodate tiers)
+   img         String?
+   cover       String?
+points          Int       @default(0) // Add points field
+   lastHourlyClaim DateTime? // Timestamp of the last hourly mission claim
+   lastDailyClaim  DateTime? // Timestamp of the last daily mission claim
+
+   // Team Relations
+   // Relation indicating which team this user leads (if any)
+   // Linked via the "TeamLeader" relation name in the Team model
+   ledTeam   Team?    @relation("TeamLeader")
+
+   // Relation indicating which team membership this user has (if any)
+   // A user can only have one membership due to the unique constraint on userId in TeamMember
+   membership TeamMember?
+
+   createdAt   DateTime @default(now())
+   updatedAt   DateTime @updatedAt
+
+   // RELATIONS
+   posts Post[]
+
+   likes Like[]
+
+   saves SavedPosts[]
+
+   followers  Follow[] @relation("UserFollowers")
+   followings Follow[] @relation("UserFollowings")
+
+   invitations TeamInvitation[] // Relation to invitations received by the user
+ }
+
+ model Post {
+   id          Int      @id @default(autoincrement())
+   createdAt   DateTime @default(now())
+   updatedAt   DateTime @updatedAt
+   desc        String?  @db.VarChar(255)
+   img         String?
+   imgHeight   Int?
+   video       String?
+   isSensitive Boolean  @default(false)
+
+   // RELATIONS
+   user   User   @relation(fields: [userId], references: [id])
+   userId String
+
+   rePostId Int?
+   rePost   Post?  @relation("RePosts", fields: [rePostId], references: [id])
+   rePosts  Post[] @relation("RePosts")
+
+   parentPostId Int?
+   parentPost   Post?  @relation("PostComments", fields: [parentPostId], references: [id])
+   comments     Post[] @relation("PostComments")
+
+   likes Like[]
+
+   saves SavedPosts[]
+ }
+
+ model Like {
+   id        Int      @id @default(autoincrement())
+   createdAt DateTime @default(now())
+
+   // RELATIONS
+   userId String
+   postId Int
+
+   user User @relation(fields: [userId], references: [id])
+   post Post @relation(fields: [postId], references: [id])
+ }
+
+ model SavedPosts {
+   id        Int      @id @default(autoincrement())
+   createdAt DateTime @default(now())
+
+   // RELATIONS
+   userId String
+   postId Int
+
+   user User @relation(fields: [userId], references: [id])
+   post Post @relation(fields: [postId], references: [id])
+ }
+
+ model Follow {
+   id        Int      @id @default(autoincrement())
+   createdAt DateTime @default(now())
+
+   // RELATIONS
+   followerId  String
+   followingId String
+
+   follower  User @relation("UserFollowers", fields: [followerId], references: [id])
+   following User @relation("UserFollowings", fields: [followingId], references: [id])
+ }
+
+ // Define Enum for Roles
+ enum Role {
+  DUELIST
+  VANGUARD
+  STRATEGIST
+ }
+
+// New Team model
+model Team {
+  id        String   @id @default(cuid())
+  name      String   @unique // Requirement: Teams have a unique name
+  leaderId  String   @unique // Requirement: User can create/lead only one team
+  leader    User     @relation("TeamLeader", fields: [leaderId], references: [id], onDelete: Cascade) // Relation to the leader User
+
+  whitelist Json @default("[]") // Requirement: Whitelist of usernames allowed to join (stored as JSON) - Kept for potential future use
+  members     TeamMember[]     // Relation to team members (one team has many members)
+  invitations TeamInvitation[] // Relation to invitations sent by this team
+
+  createdAt DateTime @default(now()) // Requirement: Timestamps
+  updatedAt DateTime @updatedAt // Requirement: Timestamps
+
+  @@index([name]) // Requirement: Search teams by name (index improves performance)
+}
+
+// New TeamMember model (join table for Team <-> User membership)
+model TeamMember {
+  id        String   @id @default(cuid())
+
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade) // Relation to the Team
+
+  userId    String   // The user who is a member
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to the User
+
+  createdAt DateTime @default(now()) // Requirement: Timestamps
+  updatedAt DateTime @updatedAt // Requirement: Timestamps
+
+  // Requirement: Users can only be part of one team at a time.
+  // This unique constraint on userId enforces that a user can appear only once
+  // in this table, thus belonging to only one team.
+  @@unique([userId], name: "UserUniqueTeamMembership")
+
+  @@index([teamId]) // Index for efficiently querying members of a specific team
+}
+// New TeamInvitation model
+model TeamInvitation {
+  id            String   @id @default(cuid())
+
+  teamId        String
+  team          Team     @relation(fields: [teamId], references: [id], onDelete: Cascade) // Relation to the Team
+
+  invitedUserId String
+  invitedUser   User     @relation(fields: [invitedUserId], references: [id], onDelete: Cascade) // Relation to the invited User
+
+  status        String   @default("PENDING") // Status: PENDING, ACCEPTED, DECLINED
+  createdAt     DateTime @default(now())
+
+  @@unique([teamId, invitedUserId]) // Prevent duplicate invitations for the same user to the same team
+  @@index([teamId]) // Index for querying invitations for a specific team
+  @@index([invitedUserId]) // Index for querying invitations for a specific user
+}

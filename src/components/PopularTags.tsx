@@ -3,7 +3,7 @@ import Image from "./Image";
 
 const PopularTags = () => {
   return (
-    <div className="p-4 rounded-2xl border-[1px] border-borderGray flex flex-col gap-4">
+    <div className="p-4 rounded-2xl border-[1px] border-borderYellow flex flex-col gap-4">
       <h1 className="text-xl font-bold text-textGrayLight">
         {"What's"} Happening
       </h1>

@@ -123,7 +123,7 @@ const ImageEditor = ({
             }`}
             onClick={() => handleChangeSensitive(!settings.sensitive)}
           >
-            Sensitive
+            Spoiler
           </div>
         </div>
       </div>

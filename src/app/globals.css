@@ -2,8 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  input, textarea, select {
+    color: theme('colors.inputBlack');
+    /* Add other base styles if needed */
+  }
+  input::placeholder, textarea::placeholder {
+     color: theme('colors.gray.600'); /* Adjust color if needed */
+  }
+   /* Style select placeholder differently if needed */
+   select:invalid { /* Often used for placeholder styling in selects */
+     color: theme('colors.gray.600');
+   }
+   select option { /* Ensure options have appropriate color if needed */
+     color: black; /* Using literal black for options as theme might not apply here */
+   }
+   /* Add any other necessary base input styles */
+}
 body {
   color: #ededed;
-  background: black;
+  background: #191a26;
   font-family: Arial, Helvetica, sans-serif;
 }

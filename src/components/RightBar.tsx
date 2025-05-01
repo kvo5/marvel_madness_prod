@@ -1,5 +1,5 @@
 import Link from "next/link";
-import PopularTags from "./PopularTags";
+import MissionsWidget from "./MissionsWidget";
 import Recommendations from "./Recommendations";
 import Search from "./Search";
 
@@ -7,7 +7,7 @@ const RightBar = () => {
   return (
     <div className="pt-4 flex flex-col gap-4 sticky top-0 h-max">
       <Search />
-      <PopularTags />
+      <MissionsWidget />
       <Recommendations />
       <div className="text-textGray text-sm flex gap-x-4 flex-wrap">
         <Link href="/">Terms of Service</Link>
@@ -15,7 +15,7 @@ const RightBar = () => {
         <Link href="/">Cookie Policy</Link>
         <Link href="/">Accessibility</Link>
         <Link href="/">Ads Info</Link>
-        <span>© 2025 L Corp.</span>
+        <span>© 2025 Marvel Madness Corp.</span>
       </div>
     </div>
   );
