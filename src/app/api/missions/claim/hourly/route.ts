@@ -5,7 +5,7 @@ import { addHours, isBefore } from 'date-fns'; // Using date-fns for time compar
 
 // Constants for hourly claim
 const HOURLY_COOLDOWN_HOURS = 1;
-const HOURLY_POINTS_REWARD = 5; // Adjusted reward as per implicit request (was 10 for daily)
+const HOURLY_POINTS_REWARD = 10; // Corrected reward to 10 points
 
 export async function POST() {
   try {

@@ -5,7 +5,7 @@ import { addDays, isBefore, startOfDay } from 'date-fns'; // Using date-fns for 
 
 // Constants for daily claim
 const DAILY_COOLDOWN_DAYS = 1; // Cooldown is 1 full day
-const DAILY_POINTS_REWARD = 25; // Adjusted reward (was 50 for weekly)
+const DAILY_POINTS_REWARD = 50; // Corrected reward to 50 points
 
 export async function POST() {
   try {

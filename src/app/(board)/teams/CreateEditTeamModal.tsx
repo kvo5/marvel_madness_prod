@@ -121,7 +121,7 @@ const CreateEditTeamModal: React.FC<CreateEditTeamModalProps> = ({
                             required
                             minLength={3}
                             maxLength={30}
-                            className="w-full p-2 border border-black rounded bg-input text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-2 border border-black rounded bg-periwinkleGrey text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter team name (3-30 characters)"
                             disabled={isSaving}
                         />
@@ -141,7 +141,7 @@ const CreateEditTeamModal: React.FC<CreateEditTeamModalProps> = ({
                                         id={field.id}
                                         value={field.value}
                                         onChange={(e) => field.setter(e.target.value)}
-                                        className="w-full p-2 border border-border-black rounded bg-input text-black text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        className="w-full p-2 border border-border-black rounded bg-periwinkleGrey text-black text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         placeholder="Enter username"
                                         disabled={isSaving}
                                         maxLength={50} // Example constraint

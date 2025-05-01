@@ -24,7 +24,7 @@ export default {
         iconBlue: "#ffe046",
         iconGreen: "#00ba7c",
         iconPink: "#f91880",
-periwinkleGrey: '#c7cede',
+        periwinkleGrey: '#c7cede',
       },
     },
   },

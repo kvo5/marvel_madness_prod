@@ -1,19 +1,27 @@
 "use client"; // Required for react-countdown
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; // Removed useOptimistic & useTransition
 import Countdown, { CountdownRenderProps } from "react-countdown";
 import { useUser } from "@clerk/nextjs";
 
+interface MissionStatus {
+  points: number;
+  lastHourlyClaim: string | null;
+  lastDailyClaim: string | null;
+}
+
 const MissionsWidget = () => {
   const { user, isLoaded } = useUser();
-  const [points, setPoints] = useState<number>(0);
-  const [lastHourlyClaim, setLastHourlyClaim] = useState<string | null>(null);
-  const [lastDailyClaim, setLastDailyClaim] = useState<string | null>(null);
+  // Step 2: Consolidate state
+  const [missionStatus, setMissionStatus] = useState<MissionStatus>({
+    points: 0,
+    lastHourlyClaim: null,
+    lastDailyClaim: null,
+  });
   const [isLoadingStatus, setIsLoadingStatus] = useState(true);
   const [isClaimingHourly, setIsClaimingHourly] = useState(false);
   const [isClaimingDaily, setIsClaimingDaily] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const HOURLY_COOLDOWN = 1 * 60 * 60 * 1000; // 1 hour in milliseconds
   const DAILY_COOLDOWN = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 
@@ -29,17 +37,18 @@ const MissionsWidget = () => {
             throw new Error(`Failed to fetch mission status: ${response.statusText}`);
           }
           const data = await response.json();
-          setPoints(data.points ?? 0);
-          // Adjust field names if backend uses different ones (e.g., lastHourlyClaim vs lastDailyClaim)
-          setLastHourlyClaim(data.lastHourlyClaim ?? null); // Assuming backend uses lastHourlyClaim for 1h
-          setLastDailyClaim(data.lastDailyClaim ?? null);   // Assuming backend uses lastDailyClaim for 7d
+          // Step 2: Populate consolidated state
+          setMissionStatus({
+            points: data.points ?? 0,
+            lastHourlyClaim: data.lastHourlyClaim ?? null,
+            lastDailyClaim: data.lastDailyClaim ?? null,
+          });
         } catch (err) {
           console.error("Error fetching mission status:", err);
           const message = err instanceof Error ? err.message : "Failed to load mission status.";
           setError(message);
-          setPoints(0);
-          setLastHourlyClaim(null);
-          setLastDailyClaim(null);
+          // Reset consolidated state on error
+          setMissionStatus({ points: 0, lastHourlyClaim: null, lastDailyClaim: null });
         } finally {
           setIsLoadingStatus(false);
         }
@@ -47,55 +56,64 @@ const MissionsWidget = () => {
       fetchStatus();
     } else if (isLoaded && !user) {
       // Not logged in
-      setPoints(0);
-      setLastHourlyClaim(null);
-      setLastDailyClaim(null);
+      setMissionStatus({ points: 0, lastHourlyClaim: null, lastDailyClaim: null });
       setIsLoadingStatus(false);
     }
   }, [isLoaded, user]);
 
-  // Calculate cooldown end times and eligibility
+  // Step 4: Create Action Function
+  const submitClaim = async (claimType: 'hourly' | 'daily') => {
+    // Removed pointsToAdd as it's handled by the backend
+    const setIsClaiming = claimType === 'hourly' ? setIsClaimingHourly : setIsClaimingDaily;
+
+    setIsClaiming(true);
+    setError(null);
+
+    try {
+      // Trigger the actual fetch call
+      const response = await fetch(`/api/missions/claim/${claimType}`, { method: 'POST' });
+
+      if (!response.ok) {
+         const errorData = await response.json().catch(() => ({ message: `Failed to claim ${claimType} reward.` }));
+         throw new Error(errorData.message || `Failed to claim ${claimType} reward.`);
+      }
+
+      // Success: Parse response, update state, and refresh
+      const data = await response.json();
+      setMissionStatus({
+        points: data.points,
+        lastHourlyClaim: data.lastHourlyClaim,
+        lastDailyClaim: data.lastDailyClaim,
+      });
+      window.location.reload(); // Refresh the page on successful claim
+
+    } catch (err) {
+      console.error(`Error claiming ${claimType} reward:`, err);
+      const message = err instanceof Error ? err.message : `Failed to claim ${claimType} reward.`;
+      setError(message);
+      // No automatic revert needed, state wasn't changed optimistically
+    } finally {
+      setIsClaiming(false); // Reset loading state regardless of success or failure
+    }
+  };
+
+
+  // Step 6: Update Rendering Logic (using optimisticStatus)
   const now = Date.now();
-  const hourlyCooldownEndTime = lastHourlyClaim ? new Date(lastHourlyClaim).getTime() + HOURLY_COOLDOWN : 0;
-  const dailyCooldownEndTime = lastDailyClaim ? new Date(lastDailyClaim).getTime() + DAILY_COOLDOWN : 0;
+  const hourlyCooldownEndTime = missionStatus.lastHourlyClaim ? new Date(missionStatus.lastHourlyClaim).getTime() + HOURLY_COOLDOWN : 0;
+  const dailyCooldownEndTime = missionStatus.lastDailyClaim ? new Date(missionStatus.lastDailyClaim).getTime() + DAILY_COOLDOWN : 0;
 
   const isHourlyClaimable = now >= hourlyCooldownEndTime;
   const isDailyClaimable = now >= dailyCooldownEndTime;
 
-  // Claim Handlers
-  const handleClaim = async (type: "hourly" | "daily") => {
-    const endpoint = `/api/missions/claim/${type}`;
-    const setIsClaiming = type === "hourly" ? setIsClaimingHourly : setIsClaimingDaily;
-    const setLastError = type === "hourly" ? setLastHourlyClaim : setLastDailyClaim;
 
-    setIsClaiming(true);
-    setError(null);
-    try {
-      const response = await fetch(endpoint, { method: "POST" });
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: `Failed to claim ${type} reward.` }));
-        throw new Error(errorData.message || `Failed to claim ${type} reward.`);
-      }
-      const data = await response.json();
-      setPoints(data.points);
-      setLastError(data.lastClaim); // Assuming backend returns { points: number, lastClaim: string }
-    } catch (err) {
-      console.error(`Error claiming ${type} reward:`, err);
-      const message = err instanceof Error ? err.message : `Failed to claim ${type} reward.`;
-      setError(message);
-    } finally {
-      setIsClaiming(false);
-    }
-  };
+  // Step 5: Update Click Handlers
+  const handleClaimHourly = () => submitClaim("hourly");
+  const handleClaimDaily = () => submitClaim("daily");
 
-  const handleClaimHourly = () => handleClaim("hourly");
-  const handleClaimDaily = () => handleClaim("daily");
-
-  // Countdown Renderer
+  // Countdown Renderer (no changes needed here)
   const countdownRenderer = ({ hours, minutes, seconds, completed }: CountdownRenderProps) => {
     if (completed) {
-      // This part might not be reached if we re-render based on eligibility state change,
-      // but good to handle just in case.
       return <span>CLAIM NOW!</span>;
     } else {
       return (
@@ -117,7 +135,7 @@ const MissionsWidget = () => {
       {error && <p className="text-red-500 text-center text-sm">{error}</p>}
 
       <div className="flex flex-col gap-3 items-center">
-        {/* Hourly Button */}
+        {/* Hourly Button - Step 6: Update Rendering Logic */}
         <button
           className="bg-[#ffe046] text-black font-semibold py-2 px-4 rounded-lg w-full disabled:opacity-70 disabled:cursor-not-allowed"
           onClick={handleClaimHourly}
@@ -130,7 +148,7 @@ const MissionsWidget = () => {
           )}
         </button>
 
-        {/* Daily Button */}
+        {/* Daily Button - Step 6: Update Rendering Logic */}
         <button
           className="bg-[#ffe046] text-black font-semibold py-2 px-4 rounded-lg w-full disabled:opacity-70 disabled:cursor-not-allowed"
           onClick={handleClaimDaily}
@@ -145,10 +163,14 @@ const MissionsWidget = () => {
       </div>
 
       <p className="text-textGray text-center mt-4">
-        Current Points: {isLoadingStatus ? "[Loading...]" : points ?? 0}
+        {/* Step 6: Update Rendering Logic */}
+        Current Points: {isLoadingStatus ? "[Loading...]" : missionStatus.points ?? 0}
       </p>
     </div>
   );
 };
 
 export default MissionsWidget;
+
+// Step 7: Cleanup - Old handleClaim function is removed implicitly by not including it.
+// Old state setters (setPoints, etc.) are removed implicitly.
