@@ -71,9 +71,8 @@ const FollowingPage = async () => {
       <div className='px-4 pt-4 flex justify-between text-textGray font-bold border-b-[1px] border-borderYellow'>
         <Link className="pb-3 flex items-center" href="/">Feed</Link>
         <Link className="pb-3 flex items-center border-b-4 border-iconBlue" href="/following">Following</Link> {/* Updated href and active style */}
-        <Link className="hidden pb-3 md:flex items-center" href="/">Assemble</Link> {/* Assuming these link elsewhere */}
         <Link className="hidden pb-3 md:flex items-center" href="/">Scrims</Link>
-        <Link className="hidden pb-3 md:flex items-center" href="/">Tournaments</Link>
+        <Link className="hidden pb-3 md:flex items-center" href="/">Draft</Link>
       </div>
 
       {/* Pass data (including isFollowed status) to client component */}

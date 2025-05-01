@@ -44,6 +44,7 @@ const Recommendations = async () => {
   return (
     <div className="p-4 rounded-2xl border-[1px] border-borderYellow flex flex-col gap-4">
       {/* Add explicit type for 'person' */}
+<h1 className="text-xl font-bold text-white text-center mb-2">Who to follow</h1>
       {recommendations.map((person: RecommendedUser) => (
         <div className="flex items-center justify-between" key={person.id}>
           {/* IMAGE AND USER INFO - Wrapped in Link */}
