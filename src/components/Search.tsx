@@ -15,7 +15,7 @@ type SearchUser = {
 // Simple debounce function
 // Use specific generics A for args array type, R for the original function's return type.
 // The debounced function itself returns void.
-const debounce = <A extends unknown[], R>(func: (...args: A) => R, waitFor: number): ((...args: A) => void) => {
+const debounce = <A extends unknown[], R>(func: (..._args: A) => R, waitFor: number): ((...args: A) => void) => {
   let timeout: ReturnType<typeof setTimeout> | null = null;
 
   // The debounced function takes arguments of type A and returns void.
@@ -65,7 +65,7 @@ const Search = () => {
   };
 
   // Debounced version of fetchUsers
-  const debouncedFetchUsers = useCallback(debounce(fetchUsers, 300), []); // 300ms debounce
+  const debouncedFetchUsers = useCallback(debounce(fetchUsers, 300), [fetchUsers]); // 300ms debounce
 
   useEffect(() => {
     debouncedFetchUsers(query);

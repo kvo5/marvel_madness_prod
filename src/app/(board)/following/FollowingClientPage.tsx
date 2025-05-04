@@ -16,10 +16,10 @@ type FollowingUserWithStatus = {
 
 interface FollowingClientPageProps {
   initialFollowingUsers: FollowingUserWithStatus[]; // Use updated type
-  currentUserId: string; // Keep currentUserId if needed elsewhere, though FollowButton doesn't need it directly
+  _currentUserId: string; // Keep currentUserId if needed elsewhere, though FollowButton doesn't need it directly
 }
 
-const FollowingClientPage: React.FC<FollowingClientPageProps> = ({ initialFollowingUsers, currentUserId }) => {
+const FollowingClientPage: React.FC<FollowingClientPageProps> = ({ initialFollowingUsers, _currentUserId }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredUsers = useMemo(() => {

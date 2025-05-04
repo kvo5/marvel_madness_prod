@@ -5,8 +5,8 @@ import { socket } from "../socket";
 import { useUser } from "@clerk/nextjs";
 
 export default function Socket() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [transport, setTransport] = useState("N/A");
+  const [_isConnected, setIsConnected] = useState(false);
+  const [_transport, setTransport] = useState("N/A");
 
   const { user } = useUser();
 

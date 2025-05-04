@@ -13,7 +13,7 @@ interface TeamData {
 interface CreateEditTeamModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (data: { teamName: string; invitedUsernames: string[]; teamId?: string }) => void;
+    onSave: ({ teamName, invitedUsernames, teamId }: { teamName: string; invitedUsernames: string[]; teamId?: string }) => void;
     initialTeamData?: TeamData | null; // Use null or undefined to indicate create mode
     isSaving?: boolean; // Optional prop to indicate save operation is in progress
 }

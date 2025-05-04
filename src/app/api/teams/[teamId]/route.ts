@@ -1,7 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server'; // Added NextRequest
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/prisma';
-import { Prisma } from '@prisma/client'; // Import Prisma namespace
 
 // DELETE /api/teams/[teamId] - Delete a team
 export async function DELETE(
@@ -75,7 +74,7 @@ export async function PUT(
         let body;
         try {
             body = await request.json();
-        } catch (e) {
+        } catch {
             return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
         }
 
@@ -150,7 +149,7 @@ export async function PUT(
             }) : [];
 
             // Map for easy lookup: userId -> username
-            const potentialInviteeMap = new Map(potentialInvitees.map(u => [u.id, u.username]));
+            const _potentialInviteeMap = new Map(potentialInvitees.map(u => [u.id, u.username]));
             // Set of user IDs from the submitted list that correspond to actual users
             const validSubmittedUserIds = new Set(potentialInvitees.map(u => u.id));
 

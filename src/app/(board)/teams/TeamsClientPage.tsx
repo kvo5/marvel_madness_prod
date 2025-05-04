@@ -105,7 +105,7 @@ const TeamsClientPage = () => {
         // staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     });
 
-    const userIsOnTeam = !!userTeamStatus?.team;
+    const _userIsOnTeam = !!userTeamStatus?.team;
     const userIsLeader = userTeamStatus?.isLeader ?? false;
     const userTeamId = userTeamStatus?.team?.id;
 
@@ -154,7 +154,7 @@ const TeamsClientPage = () => {
     const editTeamMutation = useMutation({
          mutationFn: (data: { teamId: string; teamName: string; invitedUsernames: string[] }) =>
             axios.put(`/api/teams/${data.teamId}`, { name: data.teamName, invitedUsernames: data.invitedUsernames }),
-        onSuccess: (_data, variables) => {
+        onSuccess: (_variables) => {
             queryClient.invalidateQueries({ queryKey: ['userTeamStatus'] });
             // Invalidate specific team data if cached individually, or just the list
             queryClient.invalidateQueries({ queryKey: ['teams'] });

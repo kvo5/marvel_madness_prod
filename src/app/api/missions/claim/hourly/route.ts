@@ -47,7 +47,7 @@ export async function POST() {
     // Eligible: Perform the claim within a transaction
     const updatedUser = await prisma.$transaction(async (tx) => {
       // 1. Update the last claim time
-      const updated = await tx.user.update({
+      const _updated = await tx.user.update({
         where: { id: userId },
         data: {
           lastHourlyClaim: now,

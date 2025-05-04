@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/prisma';
 
 // GET /api/users/me/team - Get the current user's team status and details
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
     try {
         const authResult = await auth();
         const userId = authResult?.userId;

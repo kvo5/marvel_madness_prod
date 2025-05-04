@@ -8,8 +8,6 @@ import { revalidatePath } from "next/cache";
 import { UploadResponse } from "imagekit/dist/libs/interfaces";
 import { imagekit } from "./utils";
 import { Role } from "@prisma/client"; // Revert to standard import
-import { Prisma } from "@prisma/client"; // Keep Prisma namespace import for now
-
 export const followUser = async (targetUserId: string) => {
   const { userId } = await auth();
 

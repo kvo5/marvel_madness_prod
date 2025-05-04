@@ -1,4 +1,3 @@
-import { imagekit } from "@/utils";
 import Image from "./Image"; // Keep for post media
 import NextImage from "next/image"; // Import standard next/image for avatars
 import PostInfo from "./PostInfo";

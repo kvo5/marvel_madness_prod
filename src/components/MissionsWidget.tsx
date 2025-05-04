@@ -1,6 +1,6 @@
 "use client"; // Required for react-countdown
 
-import React, { useState, useEffect } from "react"; // Removed useOptimistic & useTransition
+import React, { useState, useEffect } from "react";
 import Countdown, { CountdownRenderProps } from "react-countdown";
 import { useUser } from "@clerk/nextjs";
 
@@ -63,7 +63,6 @@ const MissionsWidget = () => {
 
   // Step 4: Create Action Function
   const submitClaim = async (claimType: 'hourly' | 'daily') => {
-    // Removed pointsToAdd as it's handled by the backend
     const setIsClaiming = claimType === 'hourly' ? setIsClaimingHourly : setIsClaimingDaily;
 
     setIsClaiming(true);

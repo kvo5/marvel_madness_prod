@@ -13,8 +13,6 @@ generator client {
    displayName String?
    bio         String?
    location    String?
-   // job         String? // Remove - Not in original schema request
-   // website     String? // Remove - Not in original schema request
    role        Role?    // Add Role Enum
    rank        String?  // Add Rank (String to accommodate tiers)
    img         String?

@@ -10,7 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 
 const Share = () => {
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
   const [media, setMedia] = useState<File | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [desc, setDesc] = useState("");

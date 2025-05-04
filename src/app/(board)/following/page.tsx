@@ -1,8 +1,6 @@
 import { prisma } from "@/prisma";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import Image from "@/components/Image";
-import FollowButton from "@/components/FollowButton";
 import FollowingClientPage from "@/app/(board)/following/FollowingClientPage"; // Use path alias
 // Define the type for the user data we expect
 type FollowingUser = {
@@ -17,12 +15,6 @@ type FollowingRelation = {
   id: number; // Follow record ID
   following: FollowingUser;
 };
-
-// Update the props type for the client component
-interface FollowingClientPageProps {
-  initialFollowingUsers: FollowingUserWithStatus[];
-  currentUserId: string;
-}
 
 // Add isFollowed status to the user type passed to client
 type FollowingUserWithStatus = FollowingUser & {
@@ -76,7 +68,7 @@ const FollowingPage = async () => {
       </div>
 
       {/* Pass data (including isFollowed status) to client component */}
-      <FollowingClientPage initialFollowingUsers={followingUsersWithStatus} currentUserId={userId} />
+      <FollowingClientPage initialFollowingUsers={followingUsersWithStatus} _currentUserId={userId} />
     </div>
   );
 };

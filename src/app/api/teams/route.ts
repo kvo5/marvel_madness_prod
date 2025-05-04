@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { z } from 'zod';
 import { prisma } from '@/prisma';
-import { Prisma } from '@prisma/client'; // Import Prisma namespace for TransactionClient type
 
 // Schema for validating the POST request body
 const createTeamSchema = z.object({

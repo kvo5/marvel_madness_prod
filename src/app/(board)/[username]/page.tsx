@@ -3,7 +3,7 @@ import FollowButton from "@/components/FollowButton";
 // Keep custom Image component for cover for now
 // import Image from "@/components/Image";
 // Import standard next/image for avatar and cover
-import NextImage from "next/image";
+import Image from "next/image";
 import { prisma } from "@/prisma";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
@@ -48,7 +48,7 @@ const UserPage = async ({
       <div className="flex items-center gap-8 sticky top-0 backdrop-blur-md p-4 z-10 bg-[#00000084]">
         <Link href="/">
           {/* Use standard img tag */}
-          <img src="/icons/back.svg" alt="back" width={24} height={24} />
+          <Image src="/icons/back.svg" alt="back" width={24} height={24} />
         </Link>
         <h1 className="font-bold text-lg">{user.displayName}</h1>
       </div>
@@ -59,7 +59,7 @@ const UserPage = async ({
           {/* COVER */}
           <div className="w-full aspect-[3/1] relative">
             {/* Use standard NextImage for cover */}
-            <NextImage
+            <Image
               src={user.cover || "/general/noCover.png"} // Use src prop with URL from DB
               alt="Cover image"
               fill // Use fill to cover the container
@@ -70,7 +70,7 @@ const UserPage = async ({
           {/* AVATAR */}
           <div className="w-1/5 aspect-square rounded-full overflow-hidden border-4 border-black bg-gray-300 absolute left-4 -translate-y-1/2">
             {/* Use standard NextImage for avatar */}
-            <NextImage
+            <Image
               src={user.img || "/general/noAvatar.png"} // Use src prop with URL from DB
               alt="User avatar"
               fill // Use fill to cover the container
@@ -82,7 +82,7 @@ const UserPage = async ({
         <div className="flex w-full items-center justify-end gap-2 p-2">
           <div className="w-9 h-9 flex items-center justify-center rounded-full border-[1px] border-gray-500 cursor-pointer">
             {/* Use standard img tag */}
-            <img src="/icons/explore.svg" alt="more" width={20} height={20} />
+            <Image src="/icons/explore.svg" alt="more" width={20} height={20} />
           </div>
           {userId && (
             <FollowButton
@@ -105,7 +105,7 @@ const UserPage = async ({
             {user.role && (
               <div className="flex items-center gap-1">
                 {/* Use standard img tag for local public assets */}
-                <img
+                <Image
                   src={`/ranks/${user.role.charAt(0).toUpperCase() + user.role.slice(1).toLowerCase()}_Icon.webp`} // Format role name to match file case
                   alt={`${user.role} Role`}
                   width={16}
@@ -118,7 +118,7 @@ const UserPage = async ({
             {user.rank && (
               <div className="flex items-center gap-1">
                  {/* Use standard img tag for local public assets */}
-                <img
+                <Image
                   // Extract rank name, format to match filename case (e.g., "Grandmaster" from "GRANDMASTER III")
                   src={`/ranks/${user.rank.split(" ")[0].charAt(0).toUpperCase() + user.rank.split(" ")[0].slice(1).toLowerCase()}_Rank.webp`}
                   alt={`${user.rank} Rank`}
@@ -135,13 +135,13 @@ const UserPage = async ({
             {user.location && (
               <div className="flex items-center gap-2">
                  {/* Use standard img tag */}
-                <img src="/icons/userLocation.svg" alt="location" width={20} height={20} />
+                <Image src="/icons/userLocation.svg" alt="location" width={20} height={20} />
                 <span>{user.location}</span>
               </div>
             )}
             <div className="flex items-center gap-2">
                {/* Use standard img tag */}
-              <img src="/icons/date.svg" alt="date" width={20} height={20} />
+              <Image src="/icons/date.svg" alt="date" width={20} height={20} />
               <span>
                 Joined{" "}
                 {new Date(user.createdAt.toString()).toLocaleDateString(

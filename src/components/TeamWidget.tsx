@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import CustomImage from './Image'; // Assuming this is the correct path for the Image component
@@ -48,7 +48,7 @@ interface TeamWidgetProps {
 
 const MAX_DISPLAY_MEMBERS = 6;
 
-const TeamWidget: React.FC<TeamWidgetProps> = ({ team, currentUserTeamStatus, currentUsername, onEdit, hasPendingInvitation }) => {
+const TeamWidget: React.FC<TeamWidgetProps> = ({ team, currentUserTeamStatus, currentUsername: _currentUsername, onEdit, hasPendingInvitation }) => {
     const queryClient = useQueryClient();
 
     // --- Join Team Mutation ---
@@ -77,7 +77,7 @@ const TeamWidget: React.FC<TeamWidgetProps> = ({ team, currentUserTeamStatus, cu
     // --- Determine Join Button Visibility ---
     const memberCount = team._count?.members ?? team.members?.length ?? 0;
     const userIsOnThisTeam = currentUserTeamStatus?.team?.id === team.id;
-    const userIsOnAnyTeam = !!currentUserTeamStatus?.team; // Keep this check
+    const _userIsOnAnyTeam = !!currentUserTeamStatus?.team; // Keep this check
 
     // User can join IF they have a pending invitation for THIS team AND they are not already on THIS team
     // Note: The API already prevents joining if on *any* team, but this check prevents showing the button unnecessarily.
